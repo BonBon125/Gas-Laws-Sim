@@ -1,7 +1,18 @@
 import pygame
+import random
 
 
-if __name__ == "__main__":
+class Particle:
+    def __init__(self) -> None:
+        self.colour = "red"
+        self.position = self.get_random_position()
+        self.size = 20
+
+    def get_random_position(self):
+        return (random.randint(0, 1280), random.randint(0, 720))
+
+
+def main():
     # pygame setup
     pygame.init()
     screen = pygame.display.set_mode((1280, 720))
@@ -12,6 +23,10 @@ if __name__ == "__main__":
 
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
+    particles = []
+
+    for i in range(10):
+        particles.append(Particle())
     while running:
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
@@ -24,21 +39,21 @@ if __name__ == "__main__":
 
         # RENDER YOUR GAME HERE
 
-        pygame.draw.circle(screen, "red", player_pos, 40)
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
-            player_pos.y -= 300 * dt
-        if keys[pygame.K_s]:
-            player_pos.y += 300 * dt
-        if keys[pygame.K_a]:
-            player_pos.x -= 300 * dt
-        if keys[pygame.K_d]:
-            player_pos.x += 300 * dt
+        # Each particle will be in an array of particle objects
+
+
+        for i in particles:
+            pygame.draw.circle(screen, i.colour, i.position, i.size)
 
         # flip() the display to put your work on screen
         pygame.display.flip()
-        
+
+        # Returns the amount of time that has passed since the previous call of this function
+        # meaning the time taken for each frame
         dt = clock.tick(60) / 1000
 
-
     pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
