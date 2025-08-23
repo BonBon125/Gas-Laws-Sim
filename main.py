@@ -4,6 +4,7 @@ import random
 
 class Particle:
     def __init__(self, screen_height, screen_width) -> None:
+        self.speed = 10
         self.max_horizontal_position = screen_height
         self.max_vertical_position = screen_width
         self.colour = "red"
@@ -20,12 +21,13 @@ class Particle:
         vector_j = random.uniform(-1, 1)
         return { "vector_i":vector_i, "vector_j":vector_j }
 
-    def update_position(self, distance_to_move):
-        # work out the distance to move horizontally and vertically using pythagoras
-        # scale the distance
+
+    def update_velocity(self):
         self.wall_collision_event()
+
+    def update_position(self):
         hypotenuse = (self.velocity["vector_i"] ** 2 + self.velocity["vector_j"] ** 2) ** 0.5
-        scale = distance_to_move / hypotenuse
+        scale = self.speed / hypotenuse
 
         self.position["horizontal"] += scale * self.velocity["vector_i"]
         self.position["vertical"] += scale * self.velocity["vector_j"]
@@ -38,9 +40,11 @@ class Particle:
             self.velocity["vector_j"] = 0 - self.velocity["vector_j"]
 
 
-def update_particle_positions(particles):
+def update_particles(particles):
     for i in range(len(particles)):
-        particles[i].update_position(10)
+        particles[i].update_velocity()
+    for i in range(len(particles)):
+        particles[i].update_position()
 
 
 def main():
@@ -81,7 +85,7 @@ def main():
 
         # Returns the amount of time that has passed since the previous call of this function
         # meaning the time taken for each frame
-        update_particle_positions(particles)
+        update_particles(particles)
         clock.tick(60)
 
     pygame.quit()
