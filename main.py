@@ -107,8 +107,6 @@ def main():
     particle_system = ParticleSystem(number_of_particles, screen_height, screen_width)
 
     while running:
-        # poll for events
-        # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -116,19 +114,14 @@ def main():
         # fill the screen with a color to wipe away anything from last frame
         screen.fill("black")
 
-        # RENDER YOUR GAME HERE
 
-        # Each particle will be in an array of particle objects
 
         for i in particle_system.particles:
             particle_position = (i.position["horizontal"], i.position["vertical"])
             pygame.draw.circle(screen, i.colour, particle_position, i.size)
 
-        # flip() the display to put your work on screen
         pygame.display.flip()
 
-        # Returns the amount of time that has passed since the previous call of this function
-        # meaning the time taken for each frame
         particle_system.update_particles()
         clock.tick(60)
 
