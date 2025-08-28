@@ -1,6 +1,8 @@
 import pygame
 import random
 
+from pygame.draw import line
+
 
 class Particle:
     def __init__(self, screen_height, screen_width) -> None:
@@ -28,7 +30,6 @@ class Particle:
         vector_j = random.uniform(-1, 1)
         return {"vector_i": vector_i, "vector_j": vector_j}
 
-
     def update_position(self):
         hypotenuse = (
             self.velocity["vector_i"] ** 2 + self.velocity["vector_j"] ** 2
@@ -55,14 +56,16 @@ class Particle:
 class ParticleSystem:
     def __init__(self, num_particles, screen_height, screen_width) -> None:
         self.num_particles = num_particles
-        self.particles = [Particle(screen_height, screen_width) for i in range(num_particles)]
-
+        self.particles = [
+            Particle(screen_height, screen_width) for i in range(num_particles)
+        ]
 
     def update_particles(self):
         collided_particles = []
         for i in range(self.num_particles):
             for j in range(i + 1, self.num_particles):
                 if self.particles_are_touching(i, j):
+                    self.particle_collision_handler(i, j)
                     collided_particles.append(i)
                     collided_particles.append(j)
                     self.set_particle_colour(i, "blue")
@@ -71,28 +74,59 @@ class ParticleSystem:
                     self.set_particle_colour(i, "red")
                     self.set_particle_colour(j, "red")
 
-
-
         for i in range(len(self.particles)):
             self.particles[i].wall_collision_event()
         for i in range(len(self.particles)):
             self.particles[i].update_position()
 
+    def particle_collision_handler(self, particle_1_index, particle_2_index):
+        # work out the vector for the line of inertia
+        particle_1_position = (
+            self.particles[particle_1_index].position["horizontal"],
+            self.particles[particle_1_index].position["vertical"],
+        )
+        particle_2_position = (
+            self.particles[particle_2_index].position["horizontal"],
+            self.particles[particle_2_index].position["vertical"],
+        )
+
+        # print(particle_1_position)
+        # print(particle_2_position)
+        line_of_inertia_vector = (
+            particle_1_position[0] - particle_2_position[0],
+            particle_1_position[1] - particle_2_position[1],
+        )
+
+        print(line_of_inertia_vector)
+
+        # use dot product to find the angle that particle 1's velocity vector makes with the line of inertia
+
+
+
+        
+
+
+        return None
+
+
     def particles_are_touching(self, i, j):
         particle1 = self.particles[i]
         particle2 = self.particles[j]
 
-        horizontal_distance = particle1.position["horizontal"] - particle2.position["horizontal"]
+        horizontal_distance = (
+            particle1.position["horizontal"] - particle2.position["horizontal"]
+        )
         vert_distance = particle1.position["vertical"] - particle2.position["vertical"]
 
-        distance = (horizontal_distance ** 2 + vert_distance ** 2) ** 0.5
+        distance = (horizontal_distance**2 + vert_distance**2) ** 0.5
 
         if distance <= particle1.size + particle2.size:
             return True
         return False
-    
+
     def set_particle_colour(self, index, colour):
         self.particles[index].colour = colour
+
 
 def main():
     # pygame setup
@@ -113,8 +147,6 @@ def main():
 
         # fill the screen with a color to wipe away anything from last frame
         screen.fill("black")
-
-
 
         for i in particle_system.particles:
             particle_position = (i.position["horizontal"], i.position["vertical"])
