@@ -1,16 +1,17 @@
 import pygame
 import random
+import math
 
 from pygame.draw import line
 
 
 class Particle:
     def __init__(self, screen_height, screen_width) -> None:
-        self.speed = 10
+        self.speed = 20
         self.max_horizontal_position = screen_height
         self.max_vertical_position = screen_width
         self.colour = "red"
-        self.size = 10
+        self.size = 30
         self.position = self.get_random_position()
         self.velocity = self.get_initial_velocity()
 
@@ -97,17 +98,39 @@ class ParticleSystem:
             particle_1_position[1] - particle_2_position[1],
         )
 
-        print(line_of_inertia_vector)
+        # print(line_of_inertia_vector)
 
         # use dot product to find the angle that particle 1's velocity vector makes with the line of inertia
+        particle_1_velocity_vector = (
+            self.particles[particle_1_index].velocity["vector_i"],
+            self.particles[particle_1_index].velocity["vector_j"],
+        )
+        theta = self.get_angle_between_vectors(
+            line_of_inertia_vector, particle_1_velocity_vector
+        )
 
-
-
-        
-
+        print(theta)
 
         return None
 
+    def get_angle_between_vectors(self, vector_1, vector_2):
+        # use dotproduct formula to find angle
+        a_dot_b = vector_1[0] * vector_2[0] + vector_1[1] * vector_2[1]
+
+        scalar_multiplication_a_b = self.get_vector_magnitude(
+            vector_1
+        ) * self.get_vector_magnitude(vector_2)
+
+        cos_theta = a_dot_b / scalar_multiplication_a_b
+
+        theta = math.acos(cos_theta)
+
+        # angle desired is the calculated theta modulo pi
+
+        return theta % (math.pi / 2)
+
+    def get_vector_magnitude(self, vector):
+        return (vector[0] ** 2 + vector[1] ** 2) ** 0.5
 
     def particles_are_touching(self, i, j):
         particle1 = self.particles[i]
@@ -133,7 +156,7 @@ def main():
     pygame.init()
     screen_height = 1280
     screen_width = 720
-    number_of_particles = 100
+    number_of_particles = 10
     screen = pygame.display.set_mode((screen_height, screen_width))
     clock = pygame.time.Clock()
     running = True
