@@ -127,6 +127,7 @@ class ParticleSystem:
 
         # angle desired is the calculated theta modulo pi
 
+        # return theta
         return theta % (math.pi / 2)
 
     def get_vector_magnitude(self, vector):
@@ -156,7 +157,7 @@ def main():
     pygame.init()
     screen_height = 1280
     screen_width = 720
-    number_of_particles = 10
+    number_of_particles = 2
     screen = pygame.display.set_mode((screen_height, screen_width))
     clock = pygame.time.Clock()
     running = True
